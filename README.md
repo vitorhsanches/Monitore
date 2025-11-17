@@ -14,6 +14,6 @@ Monitore é um aplicativo colaborativo para o registro de ocorrências de manute
 ```bash
 git clone https://github.com/vitorhsanches/Monitore.git
 cd Monitore
-cp .env.example .env   # preencha as variáveis
+cp .env.example .env 
 npm install
 npm run dev
