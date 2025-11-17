@@ -14,124 +14,125 @@ export type Database = {
   }
   public: {
     Tables: {
-      occurrence_history: {
+      occurrence_contacts: {
         Row: {
-          comentario: string | null
           created_at: string | null
           id: string
+          nome: string
           occurrence_id: string
-          status_anterior: string | null
-          status_novo: string
-          user_id: string
+          telefone: string
         }
         Insert: {
-          comentario?: string | null
           created_at?: string | null
           id?: string
+          nome: string
           occurrence_id: string
-          status_anterior?: string | null
-          status_novo: string
-          user_id: string
+          telefone: string
         }
         Update: {
-          comentario?: string | null
           created_at?: string | null
           id?: string
+          nome?: string
           occurrence_id?: string
-          status_anterior?: string | null
-          status_novo?: string
-          user_id?: string
+          telefone?: string
         }
-        Relationships: [
-          {
-            foreignKeyName: "occurrence_history_occurrence_id_fkey"
-            columns: ["occurrence_id"]
-            isOneToOne: false
-            referencedRelation: "occurrences"
-            referencedColumns: ["id"]
-          },
-        ]
+        Relationships: []
       }
       occurrences: {
         Row: {
           acessibilidade_afetada: boolean | null
           categoria: string
-          created_at: string | null
+          created_at: string
           descricao: string
-          endereco: string | null
+          endereco: string
           fotos: string[] | null
+          historico: Json | null
           id: string
-          latitude: number | null
-          longitude: number | null
-          prioridade: string | null
+          nome: string
+          ponto_referencia: string | null
+          prioridade: string
           publica: boolean | null
-          status: string | null
-          updated_at: string | null
-          user_id: string
+          status: string
+          telefone: string
+          updated_at: string
+          user_id: string | null
         }
         Insert: {
           acessibilidade_afetada?: boolean | null
           categoria: string
-          created_at?: string | null
+          created_at?: string
           descricao: string
-          endereco?: string | null
+          endereco: string
           fotos?: string[] | null
+          historico?: Json | null
           id?: string
-          latitude?: number | null
-          longitude?: number | null
-          prioridade?: string | null
+          nome: string
+          ponto_referencia?: string | null
+          prioridade?: string
           publica?: boolean | null
-          status?: string | null
-          updated_at?: string | null
-          user_id: string
+          status?: string
+          telefone: string
+          updated_at?: string
+          user_id?: string | null
         }
         Update: {
           acessibilidade_afetada?: boolean | null
           categoria?: string
-          created_at?: string | null
+          created_at?: string
           descricao?: string
-          endereco?: string | null
+          endereco?: string
           fotos?: string[] | null
+          historico?: Json | null
           id?: string
-          latitude?: number | null
-          longitude?: number | null
-          prioridade?: string | null
+          nome?: string
+          ponto_referencia?: string | null
+          prioridade?: string
           publica?: boolean | null
-          status?: string | null
-          updated_at?: string | null
-          user_id?: string
+          status?: string
+          telefone?: string
+          updated_at?: string
+          user_id?: string | null
         }
         Relationships: []
       }
       profiles: {
         Row: {
-          avatar_url: string | null
           created_at: string | null
-          email: string
+          full_name: string | null
           id: string
-          nome: string
-          papel: string
           updated_at: string | null
+        }
+        Insert: {
+          created_at?: string | null
+          full_name?: string | null
+          id: string
+          updated_at?: string | null
+        }
+        Update: {
+          created_at?: string | null
+          full_name?: string | null
+          id?: string
+          updated_at?: string | null
+        }
+        Relationships: []
+      }
+      user_roles: {
+        Row: {
+          created_at: string | null
+          id: string
+          role: Database["public"]["Enums"]["app_role"]
           user_id: string
         }
         Insert: {
-          avatar_url?: string | null
           created_at?: string | null
-          email: string
           id?: string
-          nome: string
-          papel?: string
-          updated_at?: string | null
+          role: Database["public"]["Enums"]["app_role"]
           user_id: string
         }
         Update: {
-          avatar_url?: string | null
           created_at?: string | null
-          email?: string
           id?: string
-          nome?: string
-          papel?: string
-          updated_at?: string | null
+          role?: Database["public"]["Enums"]["app_role"]
           user_id?: string
         }
         Relationships: []
@@ -141,10 +142,20 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
-      [_ in never]: never
+      add_occurrence_comment: {
+        Args: { _comentario: string; _occurrence_id: string }
+        Returns: undefined
+      }
+      has_role: {
+        Args: {
+          _role: Database["public"]["Enums"]["app_role"]
+          _user_id: string
+        }
+        Returns: boolean
+      }
     }
     Enums: {
-      [_ in never]: never
+      app_role: "admin" | "user"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -271,6 +282,8 @@ export type CompositeTypes<
 
 export const Constants = {
   public: {
-    Enums: {},
+    Enums: {
+      app_role: ["admin", "user"],
+    },
   },
 } as const
