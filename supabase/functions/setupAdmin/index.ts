@@ -17,51 +17,59 @@ Deno.serve(async (req) => {
   }
 
   try {
-    const supabaseAdmin = createClient(
-      Deno.env.get('SUPABASE_URL') ?? '',
-      Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') ?? '',
-      {
-        auth: {
-          autoRefreshToken: false,
-          persistSession: false
-        }
-      }
-    );
+    const projectUrl = Deno.env.get('PROJECT_URL') ?? '';
+    const serviceRoleKey = Deno.env.get('SERVICE_ROLE') ?? '';
+
+    if (!projectUrl || !serviceRoleKey) {
+      console.error('Missing PROJECT_URL or SERVICE_ROLE environment variables');
+      throw new Error('Missing PROJECT_URL or SERVICE_ROLE environment variables');
+    }
+
+    const supabaseAdmin = createClient(projectUrl, serviceRoleKey, {
+      auth: {
+        autoRefreshToken: false,
+        persistSession: false,
+      },
+    });
 
     const adminEmail = 'admin.monitore@monitore.com';
     const adminPassword = 'Monitore10';
 
     // Check if admin user already exists
-    const { data: existingUsers, error: listError } = await supabaseAdmin.auth.admin.listUsers();
-    
+    const { data: existingUsers, error: listError } =
+      await supabaseAdmin.auth.admin.listUsers();
+
     if (listError) {
       console.error('Error listing users:', listError);
       throw listError;
     }
 
-    const existingAdmin = existingUsers.users.find(user => user.email === adminEmail);
+    const existingAdmin = existingUsers.users.find(
+      (user) => user.email === adminEmail
+    );
 
     if (existingAdmin) {
       console.log('Admin user already exists');
       return new Response(
-        JSON.stringify({ 
-          success: true, 
+        JSON.stringify({
+          success: true,
           message: 'Admin user already exists',
-          userExists: true 
+          userExists: true,
         } as AdminSetupResponse),
         { headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
       );
     }
 
     // Create admin user
-    const { data: newUser, error: createError } = await supabaseAdmin.auth.admin.createUser({
-      email: adminEmail,
-      password: adminPassword,
-      email_confirm: true,
-      user_metadata: {
-        full_name: 'Administrador Monitore'
-      }
-    });
+    const { data: newUser, error: createError } =
+      await supabaseAdmin.auth.admin.createUser({
+        email: adminEmail,
+        password: adminPassword,
+        email_confirm: true,
+        user_metadata: {
+          full_name: 'Administrador Monitore',
+        },
+      });
 
     if (createError) {
       console.error('Error creating admin user:', createError);
@@ -75,7 +83,7 @@ Deno.serve(async (req) => {
       .from('user_roles')
       .insert({
         user_id: newUser.user.id,
-        role: 'admin'
+        role: 'admin',
       });
 
     if (roleError) {
@@ -86,25 +94,26 @@ Deno.serve(async (req) => {
     console.log('Admin role assigned successfully');
 
     return new Response(
-      JSON.stringify({ 
-        success: true, 
+      JSON.stringify({
+        success: true,
         message: 'Admin user created successfully',
-        userExists: false 
+        userExists: false,
       } as AdminSetupResponse),
       { headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
     );
-
   } catch (error) {
     console.error('Error in setup-admin function:', error);
-    const errorMessage = error instanceof Error ? error.message : 'Failed to setup admin user';
+    const errorMessage =
+      error instanceof Error ? error.message : 'Failed to setup admin user';
+
     return new Response(
-      JSON.stringify({ 
-        success: false, 
-        message: errorMessage
+      JSON.stringify({
+        success: false,
+        message: errorMessage,
       } as AdminSetupResponse),
-      { 
+      {
         status: 500,
-        headers: { ...corsHeaders, 'Content-Type': 'application/json' } 
+        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
       }
     );
   }
