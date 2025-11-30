@@ -146,16 +146,3 @@ Upload de arquivos (storage)
 
 Realtime (se habilitado)
 
-📊 Estrutura dos Dados (Modelo Genérico)
-
-Exemplos de tabelas possíveis:
-
-ocorrencias
-
-usuarios
-
-categorias
-
-imagens
-
-logs
